@@ -25,4 +25,4 @@ runs:
         run:  $HOME/gap/bin/gap.sh -l "$PWD/gaproot;" --quitonbreak makedoc.g -c "QUIT;"
         shell: bash
         env:
-          SOURCE_DATE_EPOCH: 0
+          SOURCE_DATE_EPOCH: 0 # prevent time stamps in generated PDF
