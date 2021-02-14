@@ -2,7 +2,7 @@ name: 'Compile package documentation'
 description: 'Compile documentation with or without latex'
 inputs:
   use-latex:
-    description: 'whether to use latex'
+    description: 'if true, then install and use latex'
     required: false
     default: 'false'
 runs:
