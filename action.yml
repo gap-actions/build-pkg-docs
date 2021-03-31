@@ -5,6 +5,10 @@ inputs:
     description: 'if true, then install and use latex'
     required: false
     default: 'false'
+  use-makedoc-shell-script:
+    description: 'if true, call doc/make_doc instead of makedoc.g'
+    required: false
+    default: 'false'
 runs:
   using: "composite"
   steps:
@@ -21,8 +25,19 @@ runs:
             sudo apt-get install "${packages[@]}"
           fi
         shell: bash
-      - name: "Compile documentation"
+      - name: "Compile documentation via makedoc.g"
+        if: ${{!inputs.use-makedoc-shell-script}}
         run:  $HOME/gap/bin/gap.sh -l "$PWD/gaproot;" --quitonbreak makedoc.g -c "QUIT;"
         shell: bash
         env:
           SOURCE_DATE_EPOCH: 0 # prevent time stamps in generated PDF
+      - name: "Compile documentation via doc/make_doc"
+        if: ${{inputs.use-makedoc-shell-script}}
+        run:  $HOME/doc/make_doc
+        shell: bash
+        env:
+          SOURCE_DATE_EPOCH: 0 # prevent time stamps in generated PDF
+      - name: Setup tmate session on failure
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 15

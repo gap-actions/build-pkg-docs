@@ -17,6 +17,9 @@ All of the following inputs are optional.
 - use-latex:
   - if `true`, then install and use latex
   - default: `false`
+- use-makedoc-shell-script:
+  - if true, call `doc/make_doc` instead of `makedoc.g`
+  - default: `false`
 
 ### Examples
 
