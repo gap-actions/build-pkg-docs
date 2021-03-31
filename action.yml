@@ -1,4 +1,4 @@
-name: 'Compile package documentation'
+name: 'Compile GAP package documentation'
 description: 'Compile documentation with or without latex'
 inputs:
   use-latex:
@@ -8,21 +8,31 @@ inputs:
 runs:
   using: "composite"
   steps:
-      - run: |
-          if [ ${{inputs.use-latex}} = 'true' ]
-          then
-            packages=(
-              texlive-latex-base
-              texlive-latex-recommended
-              texlive-latex-extra
-              texlive-extra-utils
-              texlive-fonts-recommended texlive-fonts-extra
-            )
-            sudo apt-get install "${packages[@]}"
-          fi
-        shell: bash
-      - name: "Compile documentation"
-        run:  $HOME/gap/bin/gap.sh -l "$PWD/gaproot;" --quitonbreak makedoc.g -c "QUIT;"
-        shell: bash
-        env:
-          SOURCE_DATE_EPOCH: 0 # prevent time stamps in generated PDF
+    - name: "Install TeX Live"
+      shell: bash
+      run: |
+        if [ ${{ inputs.use-latex }} == 'true' ]; then
+          packages=(
+            texlive-latex-base
+            texlive-latex-recommended
+            texlive-latex-extra
+            texlive-extra-utils
+            texlive-fonts-recommended texlive-fonts-extra
+          )
+          sudo apt-get install "${packages[@]}"
+        fi
+
+    - name: "Compile documentation"
+      shell: bash
+      run: |
+        if [ -f "makedoc.g" ]; then
+          $HOME/gap/bin/gap.sh -l "$PWD/gaproot;" --quitonbreak makedoc.g -c "QUIT;"
+        elif [ -f "doc/make_doc" ]; then
+           cd doc
+           ./make_doc
+        else
+          echo "no makedoc.g file or doc/make_doc script found!"
+          exit 1
+        fi
+      env:
+        SOURCE_DATE_EPOCH: 0 # prevent time stamps in generated PDF
