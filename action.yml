@@ -27,9 +27,17 @@ runs:
       run: |
         if [ -f "makedoc.g" ]; then
           $HOME/gap/bin/gap.sh -l "$PWD/gaproot;" --quitonbreak makedoc.g -c "QUIT;"
-        elif [ -f "doc/make_doc" ]; then
-           cd doc
-           ./make_doc
+        elif [ -x "doc/make_doc" ]; then
+          # If the package is called <pkg_name>, then the <doc/make_doc> script
+          # most likely needs to be called from the within the <pkg_name>/doc
+          # folder, and moreover, the directory hierarchy most likely needs to
+          # be <gaproot>/pkg/<pkg_name>/doc/make_doc.
+          PKG=${PWD##*/}
+          [ -d $HOME/gap/pkg/$PKG ] || mkdir $HOME/gap/pkg/$PKG
+          mv doc/ $HOME/gap/pkg/$PKG/
+          (cd $HOME/gap/pkg/$PKG/doc/ && ./make_doc)
+          mv $HOME/gap/pkg/$PKG/doc .
+          mv $HOME/gap/pkg/$PKG/htm .
         else
           echo "no makedoc.g file or doc/make_doc script found!"
           exit 1
