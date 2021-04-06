@@ -33,12 +33,9 @@ runs:
           # <pkg_name>/doc folder, and that the directory hierarchy is
           # <gaproot>/pkg/<pkg_name>/doc/make_doc, and relies on this to access
           # several file.
-          # We create to symlinks to the necessary GAP files, just in case.
-          [ -d ../../doc ] && echo "../../doc exists" || mkdir ../../doc
-          ln -s $HOME/gap/doc/gapmacro.tex ../../doc/gapmacro.tex
-          ln -s $HOME/gap/doc/manualindex ../../doc/manualindex
-          [ -d ../../etc ] && echo "../../etc exists" || mkdir ../../etc
-          ln -s $HOME/gap/etc/convert.pl ../../etc/convert.pl
+          # So we create symlinks to some potentially-useful GAP directories.
+          [ -d ../../doc ] && echo "../../doc exists" || ln -s $HOME/gap/doc ../../doc
+          [ -d ../../etc ] && echo "../../etc exists" || ln -s $HOME/gap/etc ../../etc
           cd doc && ./make_doc
         else
           echo "no makedoc.g file or doc/make_doc script found!"
