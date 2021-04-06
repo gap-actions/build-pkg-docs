@@ -29,15 +29,17 @@ runs:
           $HOME/gap/bin/gap.sh -l "$PWD/gaproot;" --quitonbreak makedoc.g -c "QUIT;"
         elif [ -x "doc/make_doc" ]; then
           # If the package is called <pkg_name>, then the <doc/make_doc> script
-          # most likely needs to be called from the within the <pkg_name>/doc
-          # folder, and moreover, the directory hierarchy most likely needs to
-          # be <gaproot>/pkg/<pkg_name>/doc/make_doc.
-          PKG=${PWD##*/}
-          [ -d $HOME/gap/pkg/$PKG ] || mkdir $HOME/gap/pkg/$PKG
-          mv doc/ $HOME/gap/pkg/$PKG/
-          (cd $HOME/gap/pkg/$PKG/doc/ && ./make_doc)
-          mv $HOME/gap/pkg/$PKG/doc .
-          mv $HOME/gap/pkg/$PKG/htm .
+          # most likely assumes that it has been called from the within the
+          # <pkg_name>/doc folder, and that the directory hierarchy is
+          # <gaproot>/pkg/<pkg_name>/doc/make_doc, and relies on this to access
+          # several file.
+          # We create to symlinks to the necessary GAP files, just in case.
+          [ -d ../../doc ] && echo "../../doc exists" || mkdir ../../doc
+          ln -s $HOME/gap/doc/gapmacro.tex ../../doc/gapmacro.tex
+          ln -s $HOME/gap/doc/manualindex ../../doc/manualindex
+          [ -d ../../etc ] && echo "../../etc exists" || mkdir ../../etc
+          ln -s $HOME/gap/etc/convert.pl ../../etc/convert.pl
+          cd doc && ./make_doc
         else
           echo "no makedoc.g file or doc/make_doc script found!"
           exit 1
