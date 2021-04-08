@@ -55,8 +55,6 @@ name: CI
 # Trigger the workflow on push or pull request
 on:
   push:
-    branches:
-      - master # change this to 'main' if necessary!
   pull_request:
 
 jobs:
