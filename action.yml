@@ -17,7 +17,8 @@ runs:
             texlive-latex-recommended
             texlive-latex-extra
             texlive-extra-utils
-            texlive-fonts-recommended texlive-fonts-extra
+            texlive-fonts-recommended
+            texlive-fonts-extra
           )
           sudo apt-get install "${packages[@]}"
         fi
