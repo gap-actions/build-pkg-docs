@@ -1,10 +1,10 @@
-# compile-documentation-for-packages
+# build-pkg-docs
 
 This GitHub action runs compiles the manual of a GAP package.
 
 ## Usage
 
-The action `compile-documentation-for-packages` has to be called by the workflow of a GAP
+The action `build-pkg-docs` has to be called by the workflow of a GAP
 package `gap-package`.
 By default it compiles the manual of a GAP package.
 
@@ -45,7 +45,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: gap-actions/setup-gap-for-packages@v2
-      - uses: gap-actions/compile-documentation-for-packages@v1
+      - uses: gap-actions/build-pkg-docs@v1
 ```
 
 #### Uploading the manual as an artifact
@@ -66,7 +66,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: gap-actions/setup-gap-for-packages@v2
-      - uses: gap-actions/compile-documentation-for-packages@v1
+      - uses: gap-actions/build-pkg-docs@v1
         with:
           use-latex: 'true'
       - name: 'Upload documentation'
@@ -78,12 +78,12 @@ jobs:
 
 ## Contact
 Please submit bug reports, suggestions for improvements and patches via
-the [issue tracker](https://github.com/gap-actions/compile-documentation-for-packages/issues)
+the [issue tracker](https://github.com/gap-actions/build-pkg-docs/issues)
 or via email to
 [Sergio Siccha](mailto:siccha@mathematik.uni-kl.de).
 
 ## License
-The action `compile-documentation-for-packages` is free software; you can redistribute
+The action `build-pkg-docs` is free software; you can redistribute
 and/or modify it under the terms of the GNU General Public License as published
 by the Free Software Foundation; either version 2 of the License, or (at your
 opinion) any later version. For details, see the file `LICENSE` distributed
