@@ -20,6 +20,7 @@ runs:
             texlive-fonts-recommended
             texlive-fonts-extra
           )
+          sudo apt-get update
           sudo apt-get install "${packages[@]}"
         fi
 
