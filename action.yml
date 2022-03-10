@@ -12,16 +12,8 @@ runs:
       shell: bash
       run: |
         if [ ${{ inputs.use-latex }} == 'true' ]; then
-          packages=(
-            texlive-latex-base
-            texlive-latex-recommended
-            texlive-latex-extra
-            texlive-extra-utils
-            texlive-fonts-recommended
-            texlive-fonts-extra
-          )
           sudo apt-get update
-          sudo apt-get install "${packages[@]}"
+          sudo apt-get install --no-install-recommends texlive-latex-base texlive-latex-recommended
         fi
 
     - name: "Compile documentation"
