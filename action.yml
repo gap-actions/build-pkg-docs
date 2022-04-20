@@ -25,11 +25,11 @@ runs:
         # to allow the occasional instance where a package wants to also
         # run the tests of others packages, by invoking this script multiple
         # times in different directories)
-        mkdir -p gaproot/pkg/
-        ln -f -s $PWD gaproot/pkg/
+        mkdir -p /tmp/gaproot/pkg/
+        ln -f -s $PWD /tmp/gaproot/pkg/
 
         if [ -f "makedoc.g" ]; then
-          $HOME/gap/bin/gap.sh -l "$PWD/gaproot;" --quitonbreak makedoc.g -c "QUIT;"
+          $HOME/gap/bin/gap.sh -l "/tmp/gaproot;" --quitonbreak makedoc.g -c "QUIT;"
         elif [ -x "doc/make_doc" ]; then
           # If the package is called <pkg_name>, then the <doc/make_doc> script
           # most likely assumes that it has been called from the within the
