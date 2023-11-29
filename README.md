@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: gap-actions/setup-gap@v2
       - uses: gap-actions/build-pkg-docs@v1
 ```
@@ -64,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: gap-actions/setup-gap-for-packages@v2
       - uses: gap-actions/build-pkg-docs@v1
         with:
