@@ -29,7 +29,7 @@ runs:
         ln -f -s $PWD /tmp/gaproot/pkg/
 
         if [ -f "makedoc.g" ]; then
-          $HOME/gap/bin/gap.sh -l "/tmp/gaproot;" --quitonbreak makedoc.g -c "QUIT;"
+          $HOME/gap/gap -l "/tmp/gaproot;" --quitonbreak makedoc.g -c "QUIT;"
         elif [ -x "doc/make_doc" ]; then
           # If the package is called <pkg_name>, then the <doc/make_doc> script
           # most likely assumes that it has been called from the within the
