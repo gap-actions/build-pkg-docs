@@ -40,6 +40,9 @@ runs:
           [ -d ../../doc ] && echo "../../doc exists" || ln -s $HOME/gap/doc ../../doc
           [ -d ../../etc ] && echo "../../etc exists" || ln -s $HOME/gap/etc ../../etc
           cd doc && ./make_doc
+        elif [ -f "doc/make_doc" ]; then
+          echo "doc/make_doc exists but is not executable!"
+          exit 1
         else
           echo "no makedoc.g file or doc/make_doc script found!"
           exit 1
