@@ -5,18 +5,17 @@ inputs:
     description: "if true, then install and use latex"
     required: false
     default: "false"
+
 runs:
   using: "composite"
   steps:
     - name: "Install TeX Live"
+      if: ${{ inputs.use-latex == 'true' }}
       shell: bash
       run: |
-        if [ ${{ inputs.use-latex }} == 'true' ]; then
-          sudo apt-get update
-          sudo apt-get install --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
-        fi
-
-    - name: "Compile documentation"
+        sudo apt-get update
+        sudo apt-get install --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
+    - name: "Setup GAP root"
       shell: bash
       run: |
         # set up a custom GAP root containing only this package, so that
@@ -24,10 +23,12 @@ runs:
         # (we already did that in build_pkg.sh, but we do it again here,
         # to allow the occasional instance where a package wants to also
         # run the tests of others packages, by invoking this script multiple
-        # times in different directories)
+        # times in different directories)``
         mkdir -p /tmp/gaproot/pkg/
         ln -f -s $PWD /tmp/gaproot/pkg/
-
+    - name: "Compile documentation"
+      shell: bash
+      run: |
         if [ -f "makedoc.g" ]; then
           $HOME/gap/gap -l "/tmp/gaproot;" --quitonbreak makedoc.g -c "QUIT;"
         elif [ -x "doc/make_doc" ]; then
@@ -49,3 +50,34 @@ runs:
         fi
       env:
         SOURCE_DATE_EPOCH: 0 # prevent time stamps in generated PDF
+    - name: "Check documentation is compiled"
+      shell: bash
+      run: |
+        cat > __DOC_CHECKER__.g <<EOF
+
+        Read("PackageInfo.g");
+        doc_infos := GAPInfo.PackageInfoCurrent.PackageDoc;
+        filenames := ["HTMLStart", "PDFFile", "SixFile"];
+
+        if IsRecord(doc_infos) then
+          doc_infos := [doc_infos];
+        fi;
+
+        for doc_info in doc_infos do
+          for filename in filenames do
+            if not IsExistingFile( doc_info.(filename) ) then
+              Error(
+                Concatenation(
+                  "The documentation has supposedly been built, but the file ",
+                  doc_info.(filename),
+                  " specified in PackageDoc.",
+                  filename,
+                  " does not exist."
+                )
+              );
+            fi;
+          od;
+        od;
+
+        EOF
+        $HOME/gap/gap -l "/tmp/gaproot;" --quitonbreak __DOC_CHECKER__.g -c "QUIT;"
