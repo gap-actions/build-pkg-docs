@@ -1,10 +1,10 @@
-name: 'Compile GAP package documentation'
-description: 'Compile documentation with or without latex'
+name: "Compile GAP package documentation"
+description: "Compile documentation with or without latex"
 inputs:
   use-latex:
-    description: 'if true, then install and use latex'
+    description: "if true, then install and use latex"
     required: false
-    default: 'false'
+    default: "false"
 runs:
   using: "composite"
   steps:
@@ -31,7 +31,7 @@ runs:
         if [ -f "makedoc.g" ]; then
           $HOME/gap/gap -l "/tmp/gaproot;" --quitonbreak makedoc.g -c "QUIT;"
         elif [ -x "doc/make_doc" ]; then
-          # If the package is called <pkg_name>, then the <doc/make_doc> script
+          # If the package is called <pkg_name>, then the <doc/make_doc> script
           # most likely assumes that it has been called from the within the
           # <pkg_name>/doc folder, and that the directory hierarchy is
           # <gaproot>/pkg/<pkg_name>/doc/make_doc, and relies on this to access
