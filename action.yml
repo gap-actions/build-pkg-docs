@@ -1,22 +1,25 @@
-name: 'Compile GAP package documentation'
-description: 'Compile documentation with or without latex'
+name: "Compile GAP package documentation"
+description: "Compile documentation with or without latex"
 inputs:
   use-latex:
-    description: 'if true, then install and use latex'
+    description: "if true, then install and use latex"
     required: false
-    default: 'false'
+    default: "false"
+  warnings-as-errors:
+    description: "If set to true then any errors produced whilst building the documentation will be treated as errors"
+    required: false
+    default: "true"
+
 runs:
   using: "composite"
   steps:
     - name: "Install TeX Live"
+      if: ${{ inputs.use-latex == 'true' }}
       shell: bash
       run: |
-        if [ ${{ inputs.use-latex }} == 'true' ]; then
-          sudo apt-get update
-          sudo apt-get install --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
-        fi
-
-    - name: "Compile documentation"
+        sudo apt-get update
+        sudo apt-get install --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
+    - name: "Setup GAP root"
       shell: bash
       run: |
         # set up a custom GAP root containing only this package, so that
@@ -27,11 +30,21 @@ runs:
         # times in different directories)
         mkdir -p /tmp/gaproot/pkg/
         ln -f -s $PWD /tmp/gaproot/pkg/
-
+    - name: "Check for GAP manual"
+      shell: bash
+      run: |
+        cd $HOME/gap/doc/ref
+        if [ ! -f manual.six ]; then
+          cd $HOME/gap
+          make html
+        fi
+    - name: "Compile documentation"
+      shell: bash
+      run: |
         if [ -f "makedoc.g" ]; then
-          $HOME/gap/gap -l "/tmp/gaproot;" --quitonbreak makedoc.g -c "QUIT;"
+          $HOME/gap/gap -l "/tmp/gaproot;" --quitonbreak makedoc.g -c "QUIT;" 2>&1 | tee output.log
         elif [ -x "doc/make_doc" ]; then
-          # If the package is called <pkg_name>, then the <doc/make_doc> script
+          # If the package is called <pkg_name>, then the <doc/make_doc> script
           # most likely assumes that it has been called from the within the
           # <pkg_name>/doc folder, and that the directory hierarchy is
           # <gaproot>/pkg/<pkg_name>/doc/make_doc, and relies on this to access
@@ -39,7 +52,7 @@ runs:
           # So we create symlinks to some potentially-useful GAP directories.
           [ -d ../../doc ] && echo "../../doc exists" || ln -s $HOME/gap/doc ../../doc
           [ -d ../../etc ] && echo "../../etc exists" || ln -s $HOME/gap/etc ../../etc
-          cd doc && ./make_doc
+          cd doc && ./make_doc  2>&1 | tee output.log
         elif [ -f "doc/make_doc" ]; then
           echo "doc/make_doc exists but is not executable!"
           exit 1
@@ -49,3 +62,42 @@ runs:
         fi
       env:
         SOURCE_DATE_EPOCH: 0 # prevent time stamps in generated PDF
+    - name: "Check for warnings"
+      if: ${{ inputs.warnings-as-errors == 'true' }}
+      shell: bash
+      run: |
+        if grep -i -A2 warning output.log; then
+          echo "Warnings were found when building the documentation!"
+          exit 1
+        fi
+    - name: "Check documentation is compiled"
+      shell: bash
+      run: |
+        cat > __DOC_CHECKER__.g <<EOF
+
+        Read("PackageInfo.g");
+        doc_infos := GAPInfo.PackageInfoCurrent.PackageDoc;
+        filenames := [ "HTMLStart", "SixFile" ${{ inputs.use-latex == 'true' && ', "PDFFile"' || ''  }}];
+
+        if IsRecord(doc_infos) then
+          doc_infos := [doc_infos];
+        fi;
+
+        for doc_info in doc_infos do
+          for filename in filenames do
+            if not IsExistingFile( doc_info.(filename) ) then
+              Error(
+                Concatenation(
+                  "The documentation has supposedly been built, but the file ",
+                  doc_info.(filename),
+                  " specified in PackageDoc.",
+                  filename,
+                  " does not exist."
+                )
+              );
+            fi;
+          od;
+        od;
+
+        EOF
+        $HOME/gap/gap -l "/tmp/gaproot;" --quitonbreak __DOC_CHECKER__.g -c "QUIT;"
