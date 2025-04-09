@@ -60,15 +60,13 @@ runs:
           echo "no makedoc.g file or doc/make_doc script found!"
           exit 1
         fi
-        set +o pipefail
       env:
         SOURCE_DATE_EPOCH: 0 # prevent time stamps in generated PDF
     - name: "Check for warnings"
       if: ${{ inputs.warnings-as-errors == 'true' }}
       shell: bash
       run: |
-        grep -i -A2 warning output.log
-        if [ $? -eq 0 ]; then
+        if grep -i -A2 warning output.log; then
           echo "Warnings were found when building the documentation!"
           exit 1
         fi
