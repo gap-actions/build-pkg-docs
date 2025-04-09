@@ -30,6 +30,14 @@ runs:
         # times in different directories)
         mkdir -p /tmp/gaproot/pkg/
         ln -f -s $PWD /tmp/gaproot/pkg/
+    - name: "Check for GAP manual"
+      shell: bash
+      run: |
+        cd $HOME/gap/doc/ref
+        if [ ! -f manual.six ]; then
+          cd $HOME/gap
+          make html
+        fi
     - name: "Compile documentation"
       shell: bash
       run: |
@@ -52,6 +60,7 @@ runs:
           echo "no makedoc.g file or doc/make_doc script found!"
           exit 1
         fi
+        set +o pipefail
       env:
         SOURCE_DATE_EPOCH: 0 # prevent time stamps in generated PDF
     - name: "Check for warnings"
