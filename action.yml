@@ -27,7 +27,7 @@ runs:
         # (we already did that in build_pkg.sh, but we do it again here,
         # to allow the occasional instance where a package wants to also
         # run the tests of others packages, by invoking this script multiple
-        # times in different directories)``
+        # times in different directories)
         mkdir -p /tmp/gaproot/pkg/
         ln -f -s $PWD /tmp/gaproot/pkg/
     - name: "Compile documentation"
