@@ -6,7 +6,8 @@ This GitHub action runs compiles the manual of a GAP package.
 
 The action `build-pkg-docs` has to be called by the workflow of a GAP
 package `gap-package`.
-By default it compiles the manual of a GAP package.
+By default it compiles the manual of a GAP package, and fails if any warnings
+are generated during this process.
 
 Its behaviour can be customized via the inputs below.
 
@@ -17,6 +18,10 @@ All of the following inputs are optional.
 - use-latex:
   - if `true`, then install and use latex
   - default: `false`
+- warnings-as-errors:
+  - if `true` then any errors produced whilst building the documentation will be
+    treated as errors
+  - default: `true`
 
 ### Examples
 
