@@ -5,6 +5,10 @@ inputs:
     description: "if true, then install and use latex"
     required: false
     default: "false"
+  warnings-as-errors:
+    description: "If set to true then any errors produced whilst building the documentation will be treated as errors"
+    required: false
+    default: "true"
 
 runs:
   using: "composite"
@@ -30,7 +34,7 @@ runs:
       shell: bash
       run: |
         if [ -f "makedoc.g" ]; then
-          $HOME/gap/gap -l "/tmp/gaproot;" --quitonbreak makedoc.g -c "QUIT;"
+          $HOME/gap/gap -l "/tmp/gaproot;" --quitonbreak makedoc.g -c "QUIT;" 2>&1 | tee output.log
         elif [ -x "doc/make_doc" ]; then
           # If the package is called <pkg_name>, then the <doc/make_doc> script
           # most likely assumes that it has been called from the within the
@@ -40,7 +44,7 @@ runs:
           # So we create symlinks to some potentially-useful GAP directories.
           [ -d ../../doc ] && echo "../../doc exists" || ln -s $HOME/gap/doc ../../doc
           [ -d ../../etc ] && echo "../../etc exists" || ln -s $HOME/gap/etc ../../etc
-          cd doc && ./make_doc
+          cd doc && ./make_doc  2>&1 | tee output.log
         elif [ -f "doc/make_doc" ]; then
           echo "doc/make_doc exists but is not executable!"
           exit 1
@@ -50,6 +54,15 @@ runs:
         fi
       env:
         SOURCE_DATE_EPOCH: 0 # prevent time stamps in generated PDF
+    - name: "Check for warnings"
+      if: ${{ inputs.warnings-as-errors == 'true' }}
+      shell: bash
+      run: |
+        grep -i -A2 warning output.log
+        if [ $? -eq 0 ]; then
+          echo "Warnings were found when building the documentation!"
+          exit 1
+        fi
     - name: "Check documentation is compiled"
       shell: bash
       run: |
