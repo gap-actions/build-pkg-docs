@@ -77,7 +77,7 @@ runs:
 
         Read("PackageInfo.g");
         doc_infos := GAPInfo.PackageInfoCurrent.PackageDoc;
-        filenames := ["HTMLStart", "PDFFile", "SixFile"];
+        filenames := [ "HTMLStart", "SixFile" ${{ inputs.use-latex == 'true' && ', "PDFFile"' || ''  }}];
 
         if IsRecord(doc_infos) then
           doc_infos := [doc_infos];
