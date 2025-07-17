@@ -42,6 +42,14 @@ runs:
         if [ ! -f manual.six ]; then
           cd $GAPROOT
           make html || :
+          # build a HTML version of the GAP reference manual to allow subsequent 
+          # steps to pass when building a package manual that contains refs to
+          # the GAP reference manual.
+          # There is a caveat, though: building the GAP reference manual in turn
+          # can fail if it contains undefined references; this can happen because
+          # the GAP manual contains references to several packages and we don't
+          # install a full package distribution when running tests.
+          # See also <https://github.com/gap-actions/build-pkg-docs/issues/22>.
         fi
     - name: "Compile documentation"
       shell: bash
