@@ -30,19 +30,24 @@ runs:
         # times in different directories)
         mkdir -p /tmp/gaproot/pkg/
         ln -f -s $PWD /tmp/gaproot/pkg/
+
+        # start GAP with custom GAP root, to ensure correct package version is loaded
+        GAPROOT=${GAPROOT-$HOME/gap}
+        echo "GAP=$GAPROOT/gap -l /tmp/gaproot; --quitonbreak" >> "$GITHUB_ENV"
+        echo "GAPROOT=$GAPROOT" >> "$GITHUB_ENV"
     - name: "Check for GAP manual"
       shell: bash
       run: |
-        cd $HOME/gap/doc/ref
+        cd $GAPROOT/doc/ref
         if [ ! -f manual.six ]; then
-          cd $HOME/gap
+          cd $GAPROOT
           make html
         fi
     - name: "Compile documentation"
       shell: bash
       run: |
         if [ -f "makedoc.g" ]; then
-          $HOME/gap/gap -l "/tmp/gaproot;" --quitonbreak makedoc.g -c "QUIT;" 2>&1 | tee output.log
+          $GAP makedoc.g -c "QUIT;" 2>&1 | tee output.log
         elif [ -x "doc/make_doc" ]; then
           # If the package is called <pkg_name>, then the <doc/make_doc> script
           # most likely assumes that it has been called from the within the
@@ -50,8 +55,8 @@ runs:
           # <gaproot>/pkg/<pkg_name>/doc/make_doc, and relies on this to access
           # several file.
           # So we create symlinks to some potentially-useful GAP directories.
-          [ -d ../../doc ] && echo "../../doc exists" || ln -s $HOME/gap/doc ../../doc
-          [ -d ../../etc ] && echo "../../etc exists" || ln -s $HOME/gap/etc ../../etc
+          [ -d ../../doc ] && echo "../../doc exists" || ln -s $GAPROOT/doc ../../doc
+          [ -d ../../etc ] && echo "../../etc exists" || ln -s $GAPROOT/etc ../../etc
           cd doc && ./make_doc  2>&1 | tee output.log
         elif [ -f "doc/make_doc" ]; then
           echo "doc/make_doc exists but is not executable!"
@@ -100,4 +105,4 @@ runs:
         od;
 
         EOF
-        $HOME/gap/gap -l "/tmp/gaproot;" --quitonbreak __DOC_CHECKER__.g -c "QUIT;"
+        $GAP __DOC_CHECKER__.g -c "QUIT;"
