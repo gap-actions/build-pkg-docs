@@ -41,7 +41,7 @@ runs:
         cd $GAPROOT/doc/ref
         if [ ! -f manual.six ]; then
           cd $GAPROOT
-          make html
+          make html || :
         fi
     - name: "Compile documentation"
       shell: bash
