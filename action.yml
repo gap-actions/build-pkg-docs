@@ -78,9 +78,15 @@ runs:
     - name: "Check for warnings"
       if: ${{ inputs.warnings-as-errors == 'true' }}
       shell: bash
+      # The below checks for warnings produced whilst the docs were being built,
+      # apart from the warning LaTeX produces when labels may have changed.
+      # As discussed in https://github.com/BNasmith/alco/issues/24, the LaTeX
+      # label warnings are sometimes false positives. Moreover, GAPDoc can
+      # identify this issues, hence we ignore the ones from LaTeX.
       run: |
-        if grep -i -A2 warning output.log; then
+        if grep -i -e "warning\b" output.log | grep -qiv "LaTeX Warning: Label(s) may have changed."; then
           echo "Warnings were found when building the documentation!"
+          grep -i -e "warning\b" output.log
           exit 1
         fi
     - name: "Check documentation is compiled"
