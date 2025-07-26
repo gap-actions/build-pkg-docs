@@ -92,7 +92,7 @@ runs:
     - name: "Check documentation is compiled"
       shell: bash
       run: |
-        cat > $GITHUB_ACTION_PATH/__DOC_CHECKER__.g <<EOF
+        cat > $RUNNER_TEMP/__DOC_CHECKER__.g <<EOF
 
         Read("PackageInfo.g");
         doc_infos := GAPInfo.PackageInfoCurrent.PackageDoc;
@@ -119,4 +119,4 @@ runs:
         od;
 
         EOF
-        $GAP $GITHUB_ACTION_PATH/__DOC_CHECKER__.g -c "QUIT;"
+        $GAP $RUNNER_TEMP/__DOC_CHECKER__.g -c "QUIT;"
