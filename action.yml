@@ -120,3 +120,10 @@ runs:
 
         EOF
         $GAP __DOC_CHECKER__.g -c "QUIT;"
+
+    - name: "Cleanup environment"
+      shell: bash
+      run: |
+        rm -f __DOC_CHECKER__.g
+        rm -f output.log
+        find doc \( -name '*.aux' -o -name '*.bbl' -o -name '*.blg' -o -name '*.brf' -o -name '*.idx' -o -name '*.ilg' -o -name '*.ind' -o -name '*.log' -o -name '*.out' -o -name '*.pnr' -o -name '*.toc' -o -name '*.tst' \) -exec rm -f {} +
