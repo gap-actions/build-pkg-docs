@@ -31,3 +31,9 @@ jobs:
       - uses: ./this-action/
         with:
           use-latex: ${{ matrix.use-latex }}
+      - name: Check for unwanted files
+        shell: bash
+        run: |
+          test ! -f output.log
+          test ! -f __DOC_CHECKER__.g
+          find doc \( -name '*.aux' -o -name '*.bbl' -o -name '*.blg' -o -name '*.brf' -o -name '*.idx' -o -name '*.ilg' -o -name '*.ind' -o -name '*.log' -o -name '*.out' -o -name '*.pnr' -o -name '*.toc' -o -name '*.tst' \) -exec test ! -f {} +
