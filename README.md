@@ -23,6 +23,10 @@ All of the following inputs are optional.
     treated as errors
   - default: `true`
 
+### What's new in v2
+
+This action now requires `gap-actions/setup-gap@v3`.
+
 ### Examples
 
 See below for
@@ -49,8 +53,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
-      - uses: gap-actions/setup-gap@v2
-      - uses: gap-actions/build-pkg-docs@v1
+      - uses: gap-actions/setup-gap@v3
+      - uses: gap-actions/build-pkg-docs@v2
 ```
 
 #### Uploading the manual as an artifact
@@ -70,8 +74,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
-      - uses: gap-actions/setup-gap-for-packages@v2
-      - uses: gap-actions/build-pkg-docs@v1
+      - uses: gap-actions/setup-gap@v3
+      - uses: gap-actions/build-pkg-docs@v2
         with:
           use-latex: 'true'
       - name: 'Upload documentation'
