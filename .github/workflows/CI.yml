@@ -9,7 +9,7 @@ on:
 
 jobs:
   test:
-    name: latex ${{ matrix.use-latex }}
+    name: package ${{ matrix.package }}, latex ${{ matrix.use-latex }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
