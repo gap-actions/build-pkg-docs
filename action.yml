@@ -13,11 +13,15 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: "Install tth (for old-style documentation)"
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install --no-install-recommends tth
     - name: "Install TeX Live"
       if: ${{ inputs.use-latex == 'true' }}
       shell: bash
       run: |
-        sudo apt-get update
         sudo apt-get install --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
     - name: "Check for GAP manual"
       shell: bash
