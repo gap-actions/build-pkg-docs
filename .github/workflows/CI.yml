@@ -20,6 +20,9 @@ jobs:
         package:
           - gap-actions/ActionTestGAPDocPackage
           - gap-actions/ActionTestOldDocPackage
+        exclude:
+          - package: gap-actions/ActionTestOldDocPackage
+            use-latex: false
 
     steps:
       # the order of the checkout actions is important because all contents of
