@@ -9,7 +9,7 @@ on:
 
 jobs:
   test:
-    name: latex ${{ matrix.use-latex }}
+    name: package ${{ matrix.package }}, latex ${{ matrix.use-latex }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -17,13 +17,19 @@ jobs:
         use-latex:
           - true
           - false
+        package:
+          - gap-actions/ActionTestGAPDocPackage
+          - gap-actions/ActionTestOldDocPackage
+        exclude:
+          - package: gap-actions/ActionTestOldDocPackage
+            use-latex: false
 
     steps:
       # the order of the checkout actions is important because all contents of
       # the target folder of the checkout action is removed
       - uses: actions/checkout@v5
         with:
-          repository: gap-packages/example
+          repository: ${{ matrix.package }}
       - uses: actions/checkout@v5
         with:
           path: this-action/
