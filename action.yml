@@ -43,7 +43,7 @@ runs:
       shell: bash
       run: |
         if [ -f "makedoc.g" ]; then
-          $GAP makedoc.g -c "QUIT;" 2>&1 | tee $RUNNER_TEMP/output.log
+          $GAP -c 'PushOptions(rec(relativePath:="../../..")); Read("makedoc.g"); QUIT;' 2>&1 | tee $RUNNER_TEMP/output.log
         elif [ -x "doc/make_doc" ]; then
           # If the package is called <pkg_name>, then the <doc/make_doc> script
           # most likely assumes that it has been called from the within the
