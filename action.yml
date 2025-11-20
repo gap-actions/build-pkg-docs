@@ -13,16 +13,33 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: "Validate input"
+      shell: bash
+      run: |
+        validate_boolean() {
+          local input=$1
+          local option_name=$2
+          if ! [[ "$input" =~ ^(true|false)$ ]]; then
+            echo "::error::Invalid value for option $option_name. Expected 'true' or 'false', but found '$input'"
+            exit 1;
+          fi
+        }
+
+        validate_boolean "${{ inputs.use-latex }}" use-latex
+        validate_boolean "${{ inputs.warnings-as-errors }}" warnings-as-errors
+
     - name: "Install tth (for old-style documentation)"
       shell: bash
       run: |
         sudo apt-get update
         sudo apt-get install --no-install-recommends tth
+
     - name: "Install TeX Live"
       if: ${{ inputs.use-latex == 'true' }}
       shell: bash
       run: |
         sudo apt-get install --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
+
     - name: "Check for GAP manual"
       shell: bash
       run: |
@@ -30,7 +47,7 @@ runs:
         if [ ! -f manual.six ]; then
           cd $GAPROOT
           make html || :
-          # build a HTML version of the GAP reference manual to allow subsequent 
+          # build an HTML version of the GAP reference manual to allow subsequent 
           # steps to pass when building a package manual that contains refs to
           # the GAP reference manual.
           # There is a caveat, though: building the GAP reference manual in turn
@@ -39,8 +56,11 @@ runs:
           # install a full package distribution when running tests.
           # See also <https://github.com/gap-actions/build-pkg-docs/issues/22>.
         fi
+
     - name: "Compile documentation"
       shell: bash
+      env:
+        SOURCE_DATE_EPOCH: 0 # prevent time stamps in generated PDF
       run: |
         if [ -f "makedoc.g" ]; then
           $GAP -c 'PushOptions(rec(relativePath:="../../..")); Read("makedoc.g"); QUIT;' 2>&1 | tee $RUNNER_TEMP/output.log
@@ -55,14 +75,13 @@ runs:
           [ -d ../../etc ] && echo "../../etc exists" || ln -s $GAPROOT/etc ../../etc
           cd doc && ./make_doc  2>&1 | tee $RUNNER_TEMP/output.log
         elif [ -f "doc/make_doc" ]; then
-          echo "doc/make_doc exists but is not executable!"
+          echo "::error::doc/make_doc exists but is not executable!"
           exit 1
         else
-          echo "no makedoc.g file or doc/make_doc script found!"
+          echo "::error::no makedoc.g file or doc/make_doc script found!"
           exit 1
         fi
-      env:
-        SOURCE_DATE_EPOCH: 0 # prevent time stamps in generated PDF
+
     - name: "Check for warnings"
       if: ${{ inputs.warnings-as-errors == 'true' }}
       shell: bash
@@ -70,13 +89,14 @@ runs:
       # apart from the warning LaTeX produces when labels may have changed.
       # As discussed in https://github.com/BNasmith/alco/issues/24, the LaTeX
       # label warnings are sometimes false positives. Moreover, GAPDoc can
-      # identify this issues, hence we ignore the ones from LaTeX.
+      # identify these issues, hence we ignore the ones from LaTeX.
       run: |
         if grep -i -e "warning\b" $RUNNER_TEMP/output.log | grep -qiv "LaTeX Warning: Label(s) may have changed."; then
-          echo "Warnings were found when building the documentation!"
+          echo "::error::Warnings were found when building the documentation!"
           grep -i -e "warning\b" $RUNNER_TEMP/output.log
           exit 1
         fi
+
     - name: "Check documentation is compiled"
       shell: bash
       run: |
@@ -93,15 +113,18 @@ runs:
         for doc_info in doc_infos do
           for filename in filenames do
             if not IsExistingFile( doc_info.(filename) ) then
-              Error(
+              Exec(
                 Concatenation(
+                  "echo \"::error::",
                   "The documentation has supposedly been built, but the file ",
                   doc_info.(filename),
                   " specified in PackageDoc.",
                   filename,
-                  " does not exist."
+                  " does not exist.",
+                  "\""
                 )
               );
+              FORCE_QUIT_GAP(1);
             fi;
           od;
         od;
