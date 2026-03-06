@@ -19,8 +19,8 @@ All of the following inputs are optional.
   - if `true`, then install and use latex
   - default: `false`
 - warnings-as-errors:
-  - if `true` then any errors produced whilst building the documentation will be
-    treated as errors
+  - if `true` then warnings produced whilst building the documentation are
+    treated as errors, including the `There were LaTeX errors` message
   - default: `true`
 
 ### What's new in v2
