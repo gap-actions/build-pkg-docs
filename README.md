@@ -79,9 +79,9 @@ jobs:
         with:
           use-latex: 'true'
       - name: 'Upload documentation'
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
-          name: manual
+          archive: false
           path: ./doc/manual.pdf
 ```
 
