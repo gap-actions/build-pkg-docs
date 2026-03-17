@@ -38,7 +38,7 @@ runs:
       if: ${{ inputs.use-latex == 'true' }}
       shell: bash
       run: |
-        sudo apt-get install --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
+        sudo apt-get install --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended texlive-bibtex-extra
 
     - name: "Check for GAP manual"
       shell: bash
