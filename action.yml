@@ -40,6 +40,12 @@ runs:
       run: |
         sudo apt-get install --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended texlive-bibtex-extra
 
+    - name: "Enable/disable PDF output"
+      if: ${{ inputs.use-latex != 'true' }}
+      shell: bash
+      run: |
+        echo "NOPDF=1" >> "$GITHUB_ENV"  # instructs AutoDoc >= v2026.03.18 to suppress PDF generation
+
     - name: "Check for GAP manual"
       shell: bash
       run: |
