@@ -52,7 +52,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: gap-actions/setup-gap@v3
       - uses: gap-actions/build-pkg-docs@v2
 ```
@@ -73,7 +73,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: gap-actions/setup-gap@v3
       - uses: gap-actions/build-pkg-docs@v2
         with:
