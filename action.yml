@@ -69,7 +69,12 @@ runs:
         SOURCE_DATE_EPOCH: 0 # prevent time stamps in generated PDF
       run: |
         if [ -f "makedoc.g" ]; then
-          $GAP -c 'PushOptions(rec(relativePath:="../../..")); Read("makedoc.g"); QUIT;' 2>&1 | tee $RUNNER_TEMP/output.log
+          cat > $RUNNER_TEMP/__DOC_MAKER__.g <<EOF
+          Read("makedoc.g" : relativePath:="../../..");
+          QUIT;
+
+          EOF
+          $GAP $RUNNER_TEMP/__DOC_MAKER__.g 2>&1 | tee $RUNNER_TEMP/output.log
         elif [ -x "doc/make_doc" ]; then
           # If the package is called <pkg_name>, then the <doc/make_doc> script
           # most likely assumes that it has been called from the within the
@@ -139,9 +144,10 @@ runs:
             fi;
           od;
         od;
+        QUIT;
 
         EOF
-        $GAP $RUNNER_TEMP/__DOC_CHECKER__.g -c "QUIT;"
+        $GAP $RUNNER_TEMP/__DOC_CHECKER__.g
 
     - name: "Remove auxiliary files"
       shell: bash
