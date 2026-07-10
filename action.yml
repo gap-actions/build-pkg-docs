@@ -73,7 +73,7 @@ runs:
           Read("makedoc.g" : relativePath:="../../..");
           QUIT;
 
-          EOF
+        EOF
           $GAP $RUNNER_TEMP/__DOC_MAKER__.g 2>&1 | tee $RUNNER_TEMP/output.log
         elif [ -x "doc/make_doc" ]; then
           # If the package is called <pkg_name>, then the <doc/make_doc> script
